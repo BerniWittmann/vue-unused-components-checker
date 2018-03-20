@@ -1,0 +1,26 @@
+{
+  "name": "vue-unused-components-checker",
+  "version": "1.0.0",
+  "description": "Check your Vue project for unused Components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "check-unused-comp": "./index.js"
+  },
+  "keywords": [
+    "check",
+    "vue",
+    "unused",
+    "components"
+  ],
+  "author": "BerniWittmann",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.6.0",
+    "commander": "^2.15.1",
+    "ora": "^2.0.0",
+    "rx-text-search": "^1.0.0"
+  }
+}
