@@ -22,5 +22,12 @@
     "commander": "^2.15.1",
     "ora": "^2.0.0",
     "rx-text-search": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BerniWittmann/vue-unused-components-checker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BerniWittmann/vue-unused-components-checker/issues"
   }
 }
