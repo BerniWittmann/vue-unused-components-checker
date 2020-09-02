@@ -2,48 +2,52 @@ var ora = require('ora');
 var textSearch = require('rx-text-search');
 var async = require('async');
 var path = require('path');
+var glob = require('glob');
 
-var utils = require('./utils');
-
-module.exports = function (src, maxOpenFiles) {
+module.exports = function (src, maxOpenFiles, ignore) {
   const spinner = ora('Checking for unused Components').start();
 
-  const files = [];
-  utils.filesFromDir(src, /\.vue/, function (filename) {
-    files.push(filename);
-  });
-
-  const results = [];
-  async.eachOfLimit(files, maxOpenFiles || 30, function (file, index, cb) {
-    textSearch.findAsPromise('./' + path.basename(file), ['**/*.js', '**/*.vue'], { cwd: src })
-      .then(function (result) {
-        if (result.length === 0) {
-          results.push(path.relative(src, file));
-        }
-        cb();
-      })
-      .catch(cb);
-  }, function (err) {
+  glob("**/*.vue", {
+    cwd: src,
+    ignore: ignore
+  }, function (err, files) {
     if (err) {
-      spinner.fail('Error');
-      console.error(err);
-      process.exit(1);
+      throw err;
     }
+    const results = [];
+    async.eachOfLimit(files, maxOpenFiles || 30, function (file, index, cb) {
+      const expression = "import .* from [\'\"]([@~]|\.|(\.\.))\/(.*\/)?" + path.basename(file) + "(.vue)?[\'\"];?"
+      spinner.text = 'Checking for unused Components: ' + file
+      textSearch.findAsPromise(new RegExp(expression, 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], { cwd: src, ignore: ignore })
+        .then(function (result) {
+          if (result.length === 0) {
+            results.push(file);
+          }
+          cb();
+        })
+        .catch(cb);
+    }, function (err) {
+      if (err) {
+        spinner.fail('Error');
+        console.error(err);
+        process.exit(1);
+      }
 
-    if (results.length === 0) {
-      spinner.succeed('No unused Components found.');
-      process.exit(0);
-    } else {
-      results.forEach(function (result) {
-        spinner.stopAndPersist({
-          text: result,
-          symbol: '-',
-          color: 'red'
+      if (results.length === 0) {
+        spinner.succeed('No unused Components found.');
+        process.exit(0);
+      } else {
+        results.forEach(function (result) {
+          spinner.stopAndPersist({
+            text: result,
+            symbol: '-',
+            color: 'red'
+          });
+          spinner.start('Checking for unused Components');
         });
-        spinner.start('Checking for unused Components');
-      });
-      spinner.fail(results.length + ' unused Component' + (results.length > 1 ? 's' : '') + ' found.');
-      process.exit(1);
-    }
+        spinner.fail(results.length + ' unused Component' + (results.length > 1 ? 's' : '') + ' found.');
+        process.exit(1);
+      }
+    });
   });
 };

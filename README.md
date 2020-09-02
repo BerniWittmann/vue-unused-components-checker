@@ -19,11 +19,17 @@ $ check-unused-comp .    #Checks the current file tree
 ```
 
 ``` bash
-$ check-unused-comp src/js 
+$ check-unused-comp src/js
 ```
 
 ``` bash
-$ check-unused-comp -o 20 src/js 
+$ check-unused-comp -o 20 src/js
 ```
 
-Limit the count of open files, since this can lead to errors.
+Limit the count of open files, since this can lead to errors, when directories are too large
+
+``` bash
+$ check-unused-comp -i **/node_modules/** src/js
+```
+
+Ignore specific files using [glob](https://www.npmjs.com/package/glob#glob-primer) patterns. Default: `['**/node_modules/**', '**/.nuxt/**', '**/dist/**', '**/coverage/**']`
