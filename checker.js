@@ -16,7 +16,7 @@ module.exports = function (src, maxOpenFiles, ignore) {
     }
     const results = [];
     async.eachOfLimit(files, maxOpenFiles || 30, function (file, index, cb) {
-      const expression = "(import .* from |import\\()?[\\\'\\\"]([@~]|\\.|(\\.\\.))\\/(.*\\/)?" + path.basename(file) + "(.vue)?[\\\'\\\"];?"
+      const expression = "import.*(?:[\'\"]\\b|\\/)"+path.basename(file, path.extname(file))+"(?:\\.(?:vue))?[\'\"][\\\);,]?[,;]?"   
       spinner.text = 'Checking for unused Components: ' + file
       textSearch.findAsPromise(new RegExp(expression, 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], { cwd: src, ignore: ignore })
         .then(function (result) {
