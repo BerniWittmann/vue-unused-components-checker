@@ -1,5 +1,5 @@
 import ora from 'ora';
-import textSearch from 'rx-text-search';
+import * as textSearch from 'rx-text-search';
 import async from 'async';
 import path from 'path';
 import glob from 'glob';
