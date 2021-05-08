@@ -11,6 +11,10 @@ This tool gathers all file names of `.vue` Components and check whether they are
   <img alt="" src="https://shields.io/npm/v/vue-unused-components-checker"/>
 </p>
 
+<p align="center" class="text-center">
+  <img alt="" src="https://i.imgur.com/3SJ5CeK.gif" />
+</p>
+
 ## Purpose
 
 To help eliminate dead code in your Vue project, this package scans your codebase for components that have not been imported anywhere and thus are unused, so you can spot and remove them easily.
