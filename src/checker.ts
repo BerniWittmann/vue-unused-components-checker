@@ -4,6 +4,11 @@ import async from 'async';
 import path from 'path';
 import glob from 'glob';
 
+export function getCheckExpression(file): string {
+  // return `(import|require).*(?:[\'\"]\\b|\\/)${path.basename(file, path.extname(file))}(?:\\.(?:vue))?[\'\"][\\\);,]?[,;]?`;
+  return `import .* from ['"]([@~]|.|(..))/(.*/)?${path.basename(file)}(.vue)?['"];?`;
+}
+
 export default function (src, maxOpenFiles, ignore): void {
   const spinner = ora('Checking for unused Components').start();
 
@@ -22,10 +27,9 @@ export default function (src, maxOpenFiles, ignore): void {
         files,
         maxOpenFiles || 30,
         function (file, index, cb) {
-          const expression = 'import .* from [\'"]([@~]|.|(..))/(.*/)?' + path.basename(file) + '(.vue)?[\'"];?';
           spinner.text = 'Checking for unused Components: ' + file;
           textSearch
-            .findAsPromise(new RegExp(expression, 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], {
+            .findAsPromise(new RegExp(getCheckExpression(file), 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], {
               cwd: src,
               ignore: ignore,
             })
