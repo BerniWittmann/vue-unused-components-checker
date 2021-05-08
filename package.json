@@ -2,12 +2,16 @@
   "name": "vue-unused-components-checker",
   "version": "1.1.0",
   "description": "Check your Vue project for unused Components",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
+    "test": "jest --config jest.config.ts --passWithNoTests",
+    "semantic-release": "semantic-release"
   },
   "bin": {
-    "check-unused-comp": "./index.js"
+    "check-unused-comp": "dist/index.js"
   },
   "keywords": [
     "check",
@@ -15,11 +19,11 @@
     "unused",
     "components"
   ],
-  "author": "BerniWittmann",
+  "author": "BerniWittmann <dev@bernhardwittmann.com>",
   "license": "MIT",
   "dependencies": {
     "async": "^2.6.0",
-    "commander": "^2.15.1",
+    "commander": "^7.2.0",
     "glob": "^7.1.6",
     "ora": "^2.0.0",
     "rx-text-search": "^1.0.0"
@@ -30,5 +34,40 @@
   },
   "bugs": {
     "url": "https://github.com/BerniWittmann/vue-unused-components-checker/issues"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.4",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/github": "^7.2.0",
+    "@semantic-release/npm": "^7.0.0",
+    "@semantic-release/release-notes-generator": "^9.0.0",
+    "@types/jest": "^25.1.0",
+    "@types/node": "^14.14.35",
+    "@typescript-eslint/eslint-plugin": "^2.15.0",
+    "@typescript-eslint/parser": "^2.15.0",
+    "eslint": "^6.8.0",
+    "husky": "^4.0.6",
+    "jest": "^26.6.3",
+    "semantic-release": "^17.0.0",
+    "ts-jest": "^25.1.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^3.7.4"
   }
 }
