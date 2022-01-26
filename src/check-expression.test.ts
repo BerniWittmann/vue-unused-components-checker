@@ -83,4 +83,23 @@ describe('Check Expression', () => {
         expect(expression.test('foo bar\n import("my/file/path/test"); \n')).toBeTruthy();
       });
   });
+  const dynamicExpression = new RegExp(getCheckExpression('components/header/Banner.vue', true), 'i');
+  describe('Should handle dynamic imports', () => {
+    it('Should identify dynamic imports', () => {
+      expect(dynamicExpression.test("foo bar\n <HeaderBanner/>")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n <HeaderBanner />")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n <HeaderBanner\n :param1='1'\n />")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n <Banner/>")).toBeFalsy();
+    });
+    it('Should identify lazy loaded dynamic imports', () => {
+      expect(dynamicExpression.test("foo bar\n <LazyHeaderBanner/>")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n <LazyHeaderBanner />")).toBeTruthy();
+    });
+    it('Should identify components that are referenced dynamically', () => {
+      expect(dynamicExpression.test("foo bar\n return 'HeaderBanner';")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n return \"LazyHeaderBanner\";")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n return `HeaderBanner`;")).toBeTruthy();
+      expect(dynamicExpression.test("foo bar\n name: 'HeaderBanner'")).toBeFalsy();
+    });
+  })
 });
