@@ -20,7 +20,6 @@ program
     'Handle dynamic-component imports (such as via nuxt)'
   )
   .action(function (src, options) {
-    // const completePath = src ? path.join(process.cwd(), src) : process.cwd();
     const completePath = src ? path.join(process.cwd(), src) : process.cwd();
     checker(completePath, options.openfiles, options.ignore, options.dynamic);
   })

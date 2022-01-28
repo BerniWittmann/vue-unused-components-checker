@@ -14,9 +14,11 @@ export function getDynamicImportName(file): string {
 }
 
 export function getCheckExpression(file, dynamic = false): string {
-  const dynamicComponentName = getDynamicImportName(file)
+  let dynamicComponentName = getDynamicImportName(file)
   if (dynamic && dynamicComponentName) {
-    return `(?<!(name: ))((<)|'|"|\`)(Lazy)?${dynamicComponentName}((2)?($|\n| |\/>)|('|"|\`))`
+    // Add optional dashes between words
+    dynamicComponentName = dynamicComponentName.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1).join("-?")
+    return `(?<!(name: ))((<)|'|"|\`)(Lazy)?-?${dynamicComponentName}((2)?($|\n| |\/>)|('|"|\`))`
   }
   return `(import|require).*(?:[\'\"]\\b|\\/)${path.basename(file, path.extname(file))}(?:\\.(?:vue))?[\'\"][\\\);,]?[,;]?`;
 }
