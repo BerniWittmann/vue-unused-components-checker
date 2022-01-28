@@ -22,17 +22,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCheckExpression = void 0;
+exports.getCheckExpression = exports.getDynamicImportName = void 0;
 const ora_1 = __importDefault(require("ora"));
 const textSearch = __importStar(require("rx-text-search"));
 const async_1 = __importDefault(require("async"));
 const path_1 = __importDefault(require("path"));
 const glob_1 = __importDefault(require("glob"));
-function getCheckExpression(file) {
+function getDynamicImportName(file) {
+    if (file.includes('components')) {
+        return file.replace(/.*\/?components\//, '').replace(/\.[a-z]{2,3}$/, '').split('/').reduce((fullName, path) => {
+            return fullName.charAt(0).toUpperCase() + fullName.slice(1) + path.charAt(0).toUpperCase() + path.slice(1);
+        });
+    }
+    return null;
+}
+exports.getDynamicImportName = getDynamicImportName;
+function getCheckExpression(file, dynamic = false) {
+    let dynamicComponentName = getDynamicImportName(file);
+    if (dynamic && dynamicComponentName) {
+        // Add optional dashes between words
+        dynamicComponentName = dynamicComponentName.match(/([A-Z]?[^A-Z]*)/g).slice(0, -1).join("-?");
+        return `(?<!(name: ))((<)|'|"|\`)(Lazy)?-?${dynamicComponentName}((2)?($|\n| |\/>)|('|"|\`))`;
+    }
     return `(import|require).*(?:[\'\"]\\b|\\/)${path_1.default.basename(file, path_1.default.extname(file))}(?:\\.(?:vue))?[\'\"][\\\);,]?[,;]?`;
 }
 exports.getCheckExpression = getCheckExpression;
-function default_1(src, maxOpenFiles, ignore) {
+function default_1(src, maxOpenFiles, ignore, dynamic) {
     const spinner = ora_1.default('Checking for unused Components').start();
     glob_1.default('**/*.vue', {
         cwd: src,
@@ -45,12 +60,12 @@ function default_1(src, maxOpenFiles, ignore) {
         async_1.default.eachOfLimit(files, maxOpenFiles || 30, function (file, index, cb) {
             spinner.text = 'Checking for unused Components: ' + file;
             textSearch
-                .findAsPromise(new RegExp(getCheckExpression(file), 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], {
+                .findAsPromise(new RegExp(getCheckExpression(file, dynamic), 'i'), ['**/*.{js,jsx,ts,tsx}', '**/*.vue'], {
                 cwd: src,
                 ignore: ignore,
             })
                 .then(function (result) {
-                if (result.length === 0) {
+                if (result.length === 0 && (!dynamic || file.includes('/components/'))) {
                     results.push(file);
                 }
                 cb();

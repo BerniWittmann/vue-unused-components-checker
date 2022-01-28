@@ -53,6 +53,11 @@ Ignore specific files using [glob](https://www.npmjs.com/package/glob#glob-prime
 $ check-unused-comp -i **/node_modules/** src/js
 ```
 
+Check for components that are [dynamically imported via Nuxt](https://nuxtjs.org/docs/directory-structure/components/#dynamic-imports)
+```bash
+$ check-unused-comp -d
+```
+
 ## Documentation
 
 > Refer to the basic instructions above. More thorough documentation will be added asap.

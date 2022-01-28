@@ -15,8 +15,12 @@ program
     'glob pattern or Array of glob patterns to ignore',
     '**/{node_modules,.nuxt,dist,coverage}/**',
   )
+  .option(
+    '-d, --dynamic',
+    'Handle dynamic-component imports (such as via nuxt)'
+  )
   .action(function (src, options) {
     const completePath = src ? path.join(process.cwd(), src) : process.cwd();
-    checker(completePath, options.openfiles, options.ignore);
+    checker(completePath, options.openfiles, options.ignore, options.dynamic);
   })
   .parse(process.argv);
